@@ -1,3 +1,4 @@
+
 class EnigmaMachine():
     def __init__(self, rotors, reflector, isShowSteps):
         #The order of rotors is important!
@@ -38,11 +39,24 @@ class EnigmaMachine():
                 return x.getConnection(letter)
         return letter
 
-    #Enigma uses a "substitution cipher", where essentially a letter becomes
-    #represented as another. Each time a key is pressed, it is encryped once
+    #Encrypts a phrase
+    def encrypt(self, phrase):
+        encryptedMessage = ""
+        words = phrase.split()
+        for word in words:
+            encryptedWord = ""
+            for x in range(len(word)):
+                encryptedWord = encryptedWord + self.encryptLetter(word[x])
+            encryptedMessage = encryptedMessage + encryptedWord + " "
+        return encryptedMessage
+
+
+    #Enigma uses a "substitution cipher", where essentially a letter gets
+    #swapped out for another. Each time a key is pressed, it is encryped once
     #through each rotor, then once through the reflector, then again once more
     #through each rotor on the way back. Given 3 rotors, that's 7 encryptions!
-    def encrypt(self, letter):
+    #(Not including plugs)
+    def encryptLetter(self, letter):
         self.checkRotate()
 
         encryptValue = letter
