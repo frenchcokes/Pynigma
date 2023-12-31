@@ -2,6 +2,8 @@
 class EnigmaMachine():
     def __init__(self, rotors, reflector, isShowSteps):
         #The order of rotors is important!
+        #Order starts reversed because goes right to left first.
+        rotors.reverse()
         self.rotors = rotors
         self.reflector = reflector
         self.isShowSteps = isShowSteps
@@ -24,9 +26,10 @@ class EnigmaMachine():
         plugs = self.plugs
         isDuplicate = False
         for x in plugs:
-            if((x.hasLetter(letter1) or x.hasLetter(letter2)) == True):
-               isDuplicate == True
+            if((x.hasLetter(letter1) == True) or (x.hasLetter(letter2) == True)):
+               isDuplicate = True
                break
+        assert isDuplicate == False, "Duplicate plug detected!"
         if(isDuplicate == False):
             plug = Plug([letter1, letter2])
             plugs.append(plug)
@@ -34,10 +37,24 @@ class EnigmaMachine():
     #Checks if theres a plug connection. If there's not, returns
     #unchanged value.
     def checkPlugs(self, letter):
-        for x in self.plugs:
-            if(x.hasLetter(letter)):
-                return x.getConnection(letter)
+        for plug in self.plugs:
+            if(plug.hasLetter(letter)):
+                return plug.getOtherLetter(letter)
         return letter
+    
+    #Removes the plug which contains a letter
+    def removePlug(self, letter):
+        plugs = self.plugs
+        for x in plugs:
+            if(x.hasLetter(letter) == True):
+                plugs.remove(x)
+
+    #Displays plug connections
+    def plugsDisplay(self):
+        output = ""
+        for plug in self.plugs:
+            output = output + str(plug.getConnection()) + " "
+        return output
 
     #Encrypts a phrase
     def encrypt(self, phrase):
@@ -220,7 +237,7 @@ class Plug():
     def __init__(self, connection):
         assert len(connection) == 2
         self.connection = connection
-    def getConnection(self, letter):
+    def getOtherLetter(self, letter):
         if self.hasLetter(letter):
             for x in self.connection:
                 if(x != letter):
@@ -232,3 +249,5 @@ class Plug():
             return True
         else:
             return False
+    def getConnection(self):
+        return self.connection
