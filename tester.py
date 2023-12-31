@@ -13,17 +13,29 @@ if __name__ == "__main__":
 
     reflectorB = pynigma.Reflector("UKW-B","YRUHQSLDPXNGOKMIEBFZCWVJAT")
 
-    enigmaMachine = pynigma.EnigmaMachine([rotorI, rotorII, rotorIII], reflectorB, True)
+    enigmaMachine = pynigma.EnigmaMachine([rotorI, rotorII, rotorIII], reflectorB, False)
 
     enigmaMachine.setRotorCurrentPositions([0,0,0])
-    enigmaMachine.setRotorRotatePositions([5,5,5])
+    enigmaMachine.setRotorRotatePositions([1,1,1])
 
-    enigmaMachine.encrypt("Z")
+    print(enigmaMachine.encrypt("A"))
 
     enigmaMachine.setRotorCurrentPositions([0,0,0])
-    enigmaMachine.setRotorRotatePositions([5,5,5])
+    enigmaMachine.setRotorRotatePositions([1,1,1])
 
-    enigmaMachine.encrypt("M")
+    print(enigmaMachine.encrypt("E"))
+
+    enigmaMachine.addPlug("A", "B")
+
+    enigmaMachine.setRotorCurrentPositions([0,0,0])
+    enigmaMachine.setRotorRotatePositions([1,1,1])
+
+    print(enigmaMachine.encrypt("A"))
+
+    enigmaMachine.setRotorCurrentPositions([0,0,0])
+    enigmaMachine.setRotorRotatePositions([1,1,1])
+
+    print(enigmaMachine.encrypt("W"))
 
     #print(rotorIII.encryptReverse(reflectorB.encrypt(rotorIII.encrypt("A"))))
     #print(rotorIII.encryptReverse(reflectorB.encrypt(rotorIII.encrypt("V"))))

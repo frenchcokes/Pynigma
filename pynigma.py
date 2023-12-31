@@ -1,12 +1,16 @@
 class EnigmaMachine():
     def __init__(self, rotors, reflector, isShowSteps):
+        #The order of rotors is important!
         self.rotors = rotors
         self.reflector = reflector
         self.isShowSteps = isShowSteps
-    
+        self.plugs = []
+
+    #Each click of a key causes the right-most rotor to rotate one position.
+    #The rotors to the left can only rotate if the preceding rotor is in
+    #a certain position. These positions are called "ring position" and are a setting.
     def checkRotate(self):
         rotateNext = True
-
         for rotor in self.rotors:
             if(rotateNext == True):
                 rotateNext = rotor.isNextRotorRotate()
@@ -14,50 +18,101 @@ class EnigmaMachine():
             else:
                 break
     
-    def getRotorValues(self):
-        rotorValues = []
-        for rotor in self.rotors:
-            rotorValues.append(rotor.getCurrentPostion())
-        rotorValues.reverse()
-        return rotorValues
+    #Adds a plug to the imaginary plugboard
+    def addPlug(self, letter1, letter2):
+        plugs = self.plugs
+        isDuplicate = False
+        for x in plugs:
+            if((x.hasLetter(letter1) or x.hasLetter(letter2)) == True):
+               isDuplicate == True
+               break
+        if(isDuplicate == False):
+            plug = Plug([letter1, letter2])
+            plugs.append(plug)
+    
+    #Checks if theres a plug connection. If there's not, returns
+    #unchanged value.
+    def checkPlugs(self, letter):
+        for x in self.plugs:
+            if(x.hasLetter(letter)):
+                return x.getConnection(letter)
+        return letter
 
+    #Enigma uses a "substitution cipher", where essentially a letter becomes
+    #represented as another. Each time a key is pressed, it is encryped once
+    #through each rotor, then once through the reflector, then again once more
+    #through each rotor on the way back. Given 3 rotors, that's 7 encryptions!
     def encrypt(self, letter):
         self.checkRotate()
 
         encryptValue = letter
 
+        encryptValue = self.checkPlugs(encryptValue)
+
         if(self.isShowSteps == True):
-            print("State: " + str(self.getRotorValues()))
+            print("State: " + str(self.getRotorPositions()))
             print("Input: " + letter)
+        
+        encryptValue = self.rotorForwardEncrypt(encryptValue)
+        
+        encryptValue = self.reflectorEncrypt(encryptValue)
+
+        encryptValue = self.rotorReverseEncrypt(encryptValue)
+
+        if(self.isShowSteps == True):
+            print("Result: " + encryptValue)
+
+        encryptValue = self.checkPlugs(encryptValue)
+
+        return encryptValue
+    
+    def rotorForwardEncrypt(self, letter):
+        encryptValue = letter
         for rotor in self.rotors:
             encryptValue = rotor.encrypt(encryptValue)
             if(self.isShowSteps == True):
                 print(rotor.name + " encryption: " + encryptValue)
-        
-        encryptValue = self.reflector.encrypt(encryptValue)
-        if(self.isShowSteps == True):
-                print(self.reflector.name + " encryption: " + encryptValue)
-
+        return encryptValue
+    
+    def rotorReverseEncrypt(self, letter):
         rotorsCopy = self.rotors.copy()
         rotorsCopy.reverse()
-        reversedOrderRotors = rotorsCopy
 
-        for rotor in reversedOrderRotors:
+        encryptValue = letter
+        for rotor in rotorsCopy:
             encryptValue = rotor.encryptReverse(encryptValue)
             if(self.isShowSteps == True):
                 print(rotor.name + " encryption: " + encryptValue)
-
         return encryptValue
-    
+
+    def reflectorEncrypt(self, letter):
+        encryptValue = letter
+        encryptValue = self.reflector.encrypt(encryptValue)
+        if(self.isShowSteps == True):
+                print(self.reflector.name + " encryption: " + encryptValue)
+        return encryptValue
+
+    #This is one of the settings. Current positions acts as an "offset" for
+    #each wheel. For instance, if it was rotated one position, hitting the 
+    #"A" key would give the output for the "B" key instead from the rotor.
     def setRotorCurrentPositions(self, currentPositions):
         assert len(currentPositions) == len(self.rotors), "Number of positions not equal to number of rotors."
         for x in range(len(self.rotors)):
             self.rotors[x].setCurrentPosition(currentPositions[x])
 
+    #This is another setting called the "Ring Setting". Ring setting determines when
+    #the following rotor can rotate. There was one of these for each rotor.
     def setRotorRotatePositions(self, rotatePositions):
         assert len(rotatePositions) == len(self.rotors), "Number of positions not equal to number of rotors."
         for x in range(len(self.rotors)):
             self.rotors[x].setRotatePosition(rotatePositions[x])
+
+    def getRotorPositions(self):
+        rotorPositions = []
+        for rotor in self.rotors:
+            rotorPositions.append(rotor.getCurrentPostion())
+        rotorPositions.reverse()
+        return rotorPositions
 
     def addRotors(self, rotors):
         self.rotors = rotors
@@ -68,6 +123,7 @@ class EnigmaMachine():
     def setIsShowSteps(self, bool):
         self.isShowSteps(bool)
 
+#Reflectors swap one letter for another based on the wiring.
 class Reflector():
     def __init__(self, name, wiring):
         self.name = name
@@ -78,9 +134,9 @@ class Reflector():
         encryptedLetter = self.wiring[position]
         return encryptedLetter
 
-
+#Each rotor has 26 positions, one for each letter. Each letter is wired to
+#a different letter.
 class Rotor():
-
     def __init__(self, name, wiring, rotatePosition = 0, currentPosition = 0):
         self.name = name
 
@@ -97,13 +153,16 @@ class Rotor():
         else:
             self.currentPosition = nextPosition
 
+    #The next rotor can only rotate if the preceding rotor is in the
+    #correct position.
     def isNextRotorRotate(self):
         if (self.currentPosition == self.rotatePosition):
             return True
         else:
             return False
 
-    #Right to left
+    #Right to left. Converts the position to the letter linked to
+    #the wiring.
     def encrypt(self, letter):
         inputPosition = self.currentPosition #0-25
         letterPosition = ord(letter) - 65 #0-25
@@ -117,7 +176,8 @@ class Rotor():
         encryptedLetter = self.wiring[convertedPosition]
         return encryptedLetter
 
-    #Left to Right
+    #Left to Right. Converts the wiring to the wiring linked to the
+    #letter.
     def encryptReverse(self, letter):
         inputPosition = self.currentPosition
 
@@ -139,3 +199,22 @@ class Rotor():
 
     def getCurrentPostion(self):
         return self.currentPosition
+
+#Plugs are connected to the plugboard. They swap one letter for another
+#based on the plug settings. 
+class Plug():
+    def __init__(self, connection):
+        assert len(connection) == 2
+        self.connection = connection
+    def getConnection(self, letter):
+        if self.hasLetter(letter):
+            for x in self.connection:
+                if(x != letter):
+                    return x
+        else:
+            return None
+    def hasLetter(self, letter):
+        if letter in self.connection:
+            return True
+        else:
+            return False
