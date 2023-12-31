@@ -15,11 +15,11 @@ if __name__ == "__main__":
 
     enigmaMachine = pynigma.EnigmaMachine([rotorI, rotorII, rotorIII], reflectorB, True)
 
-    enigmaMachine.setRotorCurrentPositions([0,0,0])
+    enigmaMachine.setRotorCurrentPositions([0,0,1])
     enigmaMachine.setRotorRotatePositions([5,5,5])
 
-    print(reflectorB.encrypt("A"))
-    print(reflectorB.encrypt("Y"))
+    print(rotorIII.encryptReverse(reflectorB.encrypt(rotorIII.encrypt("A"))))
+    print(rotorIII.encryptReverse(reflectorB.encrypt(rotorIII.encrypt("V"))))
 
     #print(rotorIII.encrypt(reflectorB.encrypt(rotorIII.encrypt("A"))))
     #print(rotorIII.encrypt(reflectorB.encrypt(rotorIII.encrypt("W"))))

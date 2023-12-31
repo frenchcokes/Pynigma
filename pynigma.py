@@ -103,6 +103,7 @@ class Rotor():
         else:
             return False
 
+    #Right to left
     def encrypt(self, letter):
         inputPosition = self.currentPosition #0-25
         letterPosition = ord(letter) - 65 #0-25
@@ -115,6 +116,20 @@ class Rotor():
 
         encryptedLetter = self.wiring[convertedPosition]
         return encryptedLetter
+
+    #Left to Right
+    def encryptReverse(self, letter):
+        inputPosition = self.currentPosition
+        letterPosition = ord(letter) - 65
+        convertedPosition = letterPosition + inputPosition
+
+        if(convertedPosition > 25):
+            convertedPosition = convertedPosition - 26
+        elif(convertedPosition < 0):
+            convertedPosition = convertedPosition + 26
+
+        indexOfLetter = self.wiring.find(letter)
+        return chr(indexOfLetter + 65)
     
     def setCurrentPosition(self, newCurrentPosition):
         self.currentPosition = newCurrentPosition
