@@ -43,7 +43,7 @@ class EnigmaMachine():
         reversedOrderRotors = rotorsCopy
 
         for rotor in reversedOrderRotors:
-            encryptValue = rotor.encrypt(encryptValue)
+            encryptValue = rotor.encryptReverse(encryptValue)
             if(self.isShowSteps == True):
                 print(rotor.name + " encryption: " + encryptValue)
 
@@ -107,7 +107,7 @@ class Rotor():
     def encrypt(self, letter):
         inputPosition = self.currentPosition #0-25
         letterPosition = ord(letter) - 65 #0-25
-        convertedPosition = letterPosition - inputPosition
+        convertedPosition = letterPosition + inputPosition
 
         if(convertedPosition > 25):
             convertedPosition = convertedPosition - 26
@@ -120,16 +120,16 @@ class Rotor():
     #Left to Right
     def encryptReverse(self, letter):
         inputPosition = self.currentPosition
-        letterPosition = ord(letter) - 65
-        convertedPosition = letterPosition + inputPosition
+
+        convertedPosition = self.wiring.find(letter) - inputPosition
 
         if(convertedPosition > 25):
             convertedPosition = convertedPosition - 26
         elif(convertedPosition < 0):
             convertedPosition = convertedPosition + 26
 
-        indexOfLetter = self.wiring.find(letter)
-        return chr(indexOfLetter + 65)
+        encryptedLetter = chr(convertedPosition + 65)
+        return encryptedLetter
     
     def setCurrentPosition(self, newCurrentPosition):
         self.currentPosition = newCurrentPosition
