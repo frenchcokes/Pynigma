@@ -1,4 +1,6 @@
-
+#The enigma machine was a german encryption machine used during WW2.
+#One of it's main weaknesses was that a letter could never be encrypted
+#as itself.
 class EnigmaMachine():
     def __init__(self, rotors, reflector, isShowSteps):
         #The order of rotors is important!
@@ -170,12 +172,12 @@ class Reflector():
 class Rotor():
     def __init__(self, name, wiring, rotatePosition = 0, currentPosition = 0):
         self.name = name
-
         assert len(wiring) == 26, "Wiring mapping has invalid length."
         assert wiring.isalpha(), "Wiring mapping in not alpha."
         self.wiring = wiring
-        self.rotatePosition = rotatePosition
-        self.currentPosition = currentPosition
+
+        self.setRotatePosition(rotatePosition)
+        self.setCurrentPosition(currentPosition)
 
     def rotate(self):
         nextPosition = self.currentPosition + 1
@@ -223,10 +225,16 @@ class Rotor():
         return encryptedLetter
     
     def setCurrentPosition(self, newCurrentPosition):
-        self.currentPosition = newCurrentPosition
+        if (type(newCurrentPosition) == str):
+            self.currentPosition = ord(newCurrentPosition) - 65
+        else:
+            self.currentPosition = newCurrentPosition
 
     def setRotatePosition(self, newRotatePosition):
-        self.rotatePosition = newRotatePosition
+        if (type(newRotatePosition) == str):
+            self.rotatePosition = ord(newRotatePosition) - 65
+        else:
+            self.rotatePosition = newRotatePosition
 
     def getCurrentPostion(self):
         return self.currentPosition

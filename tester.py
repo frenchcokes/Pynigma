@@ -9,20 +9,19 @@ if __name__ == "__main__":
 
     reflectorB = pynigma.Reflector("UKW-B","YRUHQSLDPXNGOKMIEBFZCWVJAT")
 
-    enigmaMachine = pynigma.EnigmaMachine([rotorI, rotorII, rotorIII], reflectorB, False)
+    enigmaMachine = pynigma.EnigmaMachine([rotorIII, rotorI, rotorII], reflectorB, False)
 
     enigmaMachine.addPlug("A", "C")
     enigmaMachine.addPlug("B", "D")
-    print(enigmaMachine.plugsDisplay())
-    enigmaMachine.removePlug("A")
-    print(enigmaMachine.plugsDisplay())
+    enigmaMachine.addPlug("E", "F")
+    enigmaMachine.addPlug("Z", "G")
 
-    #enigmaMachine.setRotorCurrentPositions([0,0,0])
-    #enigmaMachine.setRotorRotatePositions([0,0,0])
+    enigmaMachine.setRotorCurrentPositions(["A","Z","C"])
+    enigmaMachine.setRotorRotatePositions(["F","B","D"])
 
-    #print(enigmaMachine.encrypt("I AM AN ENIGMA MESSAGE YOU CANNOT DECODE ME"))
+    print(enigmaMachine.encrypt("PETER PIPER PICKED A PECK OF PICKLED PEPPERS A PECK OF PICKLED PEPPERS PETER PIPER PICKED IF PETER PIPER PICKED A PECK OF PICKLED PEPPERS WHERES THE PECK OF PICKLED PEPPERS PETER PIPER PICKED"))
 
-    #enigmaMachine.setRotorCurrentPositions([0,0,0])
-    #enigmaMachine.setRotorRotatePositions([0,0,0])
+    enigmaMachine.setRotorCurrentPositions(["A","Z","C"])
+    enigmaMachine.setRotorRotatePositions(["F","B","D"])
 
-    #print(enigmaMachine.encrypt("V OD LW FGWXZJ WSTOLER MEL NFMUCF GVRFRN DG"))
+    print(enigmaMachine.encrypt("OYKCI RDNTA VXEIUV M NBPM UP UZZQQMB FHKXSFJ P TLVI ZG OMJZKWG KDUNIMB IVGMX NSGWB VGOUWW YK EVKRI BYDID IMXZJY J MDFD RO METCIJS TVYTKNP VBCXIE HKR UDFJ SA TNXPPTC FXOFIXC VRNUL IDXMA HEPVAF"))
